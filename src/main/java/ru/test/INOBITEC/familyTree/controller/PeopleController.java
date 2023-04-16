@@ -30,10 +30,33 @@ public class PeopleController {
     }
 
     @PostMapping("/people")
-    public Map<String, Boolean> createPerson (@RequestBody People person) {
+    public Map<String, Boolean> createPerson(@RequestBody People person) {
         Map<String, Boolean> responce = new HashMap<>();
         Boolean aBoolean = peopleRepository.insert(person) > 0 ?
-                responce.put("", Boolean.TRUE) : responce.put("", Boolean.FALSE);
+                responce.put("created", Boolean.TRUE) : responce.put("created", Boolean.FALSE);
         return responce;
     }
+
+    @GetMapping("/people/getPersonId")
+    public Integer getPersonId(@RequestParam String firstName,
+                                @RequestParam String lastName) {
+        People person = peopleRepository.findByParam(firstName, lastName).
+                orElseThrow(() -> new ResourceNotFoundException("Person is not found"));
+        return person.getId();
+    }
+
+    @DeleteMapping("/people/{id}")
+    public Map<String, Boolean> deleteById(@PathVariable Integer id) {
+
+        People person = peopleRepository.findById(id).orElseThrow(
+                () -> new ResourceNotFoundException("Person is not found"));
+
+        Map<String, Boolean> response = new HashMap<>();
+
+        Boolean aBoolean = peopleRepository.deleteById(person.getId()) > 0 ?
+                response.put("deleted", Boolean.TRUE) : response.put("deleted", Boolean.FALSE);
+        return response;
+    }
+
+
 }

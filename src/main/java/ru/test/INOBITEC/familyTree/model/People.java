@@ -5,14 +5,14 @@ public class People {
     private Integer id;
     private String firstName;
     private String lastName;
-    private Integer familyId;
 
+    public People() {
+    }
 
-    public People(Integer id, String firstName, String lastName, Integer familyId) {
+    public People(Integer id, String firstName, String lastName) {
         this.id = id;
         this.firstName = firstName;
         this.lastName = lastName;
-        this.familyId = familyId;
     }
 
     public Integer getId() {
@@ -39,11 +39,4 @@ public class People {
         this.lastName = lastName;
     }
 
-    public Integer getFamilyId() {
-        return familyId;
-    }
-
-    public void setFamilyId(Integer familyId) {
-        this.familyId = familyId;
-    }
 }
