@@ -23,13 +23,6 @@ public interface BranchRepository {
             + "VALUES (#{parentId}, #{childId})")
     int insert(Branch branch);
 
-    @Select("SELECT * FROM branch WHERE id = #{id}")
-    @Results({
-            @Result(property = "parentId", column = "parent_id"),
-            @Result(property = "childId", column = "child_id")
-    })
-    Optional<Branch> findById(Integer id);
-
     @Select("SELECT * FROM branch WHERE child_id = #{childId}")
     @Results({
             @Result(property = "parentId", column = "parent_id"),

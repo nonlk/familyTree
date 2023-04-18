@@ -8,10 +8,7 @@ import ru.test.INOBITEC.familyTree.model.People;
 import ru.test.INOBITEC.familyTree.repository.BranchRepository;
 import ru.test.INOBITEC.familyTree.repository.PeopleRepository;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @RestController
 @RequestMapping("/api/test")
@@ -29,8 +26,8 @@ public class BranchController {
     }
 
     //Сервис получения всех детей по имени и фамилии родителя
-    @RequestMapping(value = "getPeopleByParentName", method = RequestMethod.GET, produces = "application/json")
-    public List<People> getPeopleByParentName(@RequestParam String parentFirstName,
+    @RequestMapping(value = "getChildrenByParentName", method = RequestMethod.GET, produces = "application/json")
+    public List<People> getChildrenByParentName(@RequestParam String parentFirstName,
                                                 @RequestParam String parentLastName) {
         //Поиск человека по имени и фамилии
         People parent = peopleRepository.findByParam(parentFirstName, parentLastName).
@@ -87,6 +84,26 @@ public class BranchController {
         return responce;
     }
 
+    //Метод для получения списка всех потомков по id родителя
+    private List<People> searchChildren(List<People> childList, Integer parentId) {
+        //Проверка на существование родителя с переданным id
+        if (peopleRepository.findById(parentId).isPresent()) {
+
+            //Запись всех веток, где родитель является родителем
+            List<Branch> branches = branchRepository.findByParentId(parentId);
+            for (int i = 0; i < branches.size(); i++) {
+
+                //Добавление найденных потомков в список
+                childList.add(peopleRepository.findById(branches.get(i).getChildId()).
+                        orElseThrow(() -> new ResourceNotFoundException("child is not found")));
+
+                //Рекурсия для нахождения более дальних потомков
+                searchChildren(childList, childList.get(childList.size() - 1).getId());
+            }
+        }
+        return childList;
+    }
+
     //Сервис удаления веток и людей по имени и фамилии родителя
     @RequestMapping(value = "deleteBranchesAndPeople", method = RequestMethod.DELETE, produces = "application/json")
     public Map<String, Boolean> deleteBranchesAndPeople(@RequestParam String parentFirstName,
@@ -95,21 +112,19 @@ public class BranchController {
         People parent = peopleRepository.findByParam(parentFirstName, parentLastName).
                 orElseThrow(() -> new ResourceNotFoundException("Parent is not found"));
 
-        //Сбор всех веток человека, где человек является родителем
-        List<Branch> branches = branchRepository.findByParentId(parent.getId());
+        //Сбор всех потомков найденного человека
+        List<People> children = new ArrayList<>();
+        children = searchChildren(children, parent.getId());
 
         Map<String, Boolean> response = new HashMap<>();
 
-        branches.forEach(branch -> {
-            //Поиск человека, являющегося ребенком найденного родителя, по id
-            People child = peopleRepository.findById(branch.getChildId()).
-                    orElseThrow(() -> new ResourceNotFoundException("Child is not found"));
-
-            //Проверка удаления найденного ребенка
+        //Удаление найденных потомков и веток, в которых они указаны
+        children.forEach(child -> {
             if (peopleRepository.deleteById(child.getId()) > 0) {
-                //Проверка удаления ветки, где найден ребенок
-                Boolean aBoolean = branchRepository.deleteById(branch.getId()) > 0 ?
-                                response.put("deleted", Boolean.TRUE) : response.put("deleted", Boolean.FALSE);
+                //Проверка удаления ветки, где найден потомок
+                Boolean aBoolean = branchRepository.deleteById(branchRepository.findByChildId(child.getId()).
+                                orElseThrow(() -> new ResourceNotFoundException("Child branch is not found")).getId()) > 0 ?
+                        response.put("deleted", Boolean.TRUE) : response.put("deleted", Boolean.FALSE);
             } else response.put("child deleted", Boolean.FALSE);
         });
 
