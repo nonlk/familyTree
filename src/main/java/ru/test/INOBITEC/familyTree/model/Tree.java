@@ -1,20 +1,16 @@
 package ru.test.INOBITEC.familyTree.model;
 
-import java.util.List;
-
 public class Tree {
 
     private Integer id;
     private Integer rootPersonId;
-    private List<Branch> branches;
 
     public Tree() {
     }
 
-    public Tree(Integer id, Integer rootPersonId, List<Branch> branches) {
+    public Tree(Integer id, Integer rootPersonId) {
         this.id = id;
         this.rootPersonId = rootPersonId;
-        this.branches = branches;
     }
 
     public Integer getId() {
@@ -33,11 +29,4 @@ public class Tree {
         this.rootPersonId = rootPersonId;
     }
 
-    public List<Branch> getBranches() {
-        return branches;
-    }
-
-    public void setBranches(List<Branch> branches) {
-        this.branches = branches;
-    }
 }

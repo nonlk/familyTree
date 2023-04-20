@@ -11,3 +11,9 @@ CREATE TABLE IF NOT EXISTS branch
     parent_id INTEGER NOT NULL,
     child_id INTEGER NOT NULL
 );
+
+CREATE TABLE IF NOT EXISTS tree
+(
+    id SERIAL PRIMARY KEY,
+    root_person_id INTEGER NOT NULL
+);
