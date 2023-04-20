@@ -32,16 +32,9 @@ public class Branch {
         return parentId;
     }
 
-    public void setParentId(Integer parentId) {
-        this.parentId = parentId;
-    }
-
     public Integer getChildId() {
         return childId;
     }
 
-    public void setChildId(Integer childId) {
-        this.childId = childId;
-    }
 }
 

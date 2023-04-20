@@ -7,7 +7,7 @@ import java.util.List;
 import java.util.Optional;
 
 @Mapper
-public interface BranchRepository {
+public interface BranchMapper {
 
     @Select("SELECT * FROM branch")
     @Results({
