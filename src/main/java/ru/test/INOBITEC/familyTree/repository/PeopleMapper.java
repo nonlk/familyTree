@@ -7,7 +7,7 @@ import java.util.List;
 import java.util.Optional;
 
 @Mapper
-public interface PeopleRepository {
+public interface PeopleMapper {
 
     @Select("SELECT * FROM people")
     @Results({
