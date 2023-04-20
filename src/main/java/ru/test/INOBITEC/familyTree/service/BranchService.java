@@ -59,9 +59,13 @@ public class BranchService {
         //Сбор всех потомков найденного человека
         List<People> children = new ArrayList<>();
         searchChildren(children, parent.getId());
-
         Map<String, Boolean> response = new HashMap<>();
 
+        //Проверка на наличие потомков
+        if (children.size() == 0){
+            response.put("deleted", Boolean.TRUE);
+            return response;
+        }
         //Удаление найденных потомков и веток, в которых они указаны
         children.forEach(child -> {
             if (peopleMapper.deleteById(child.getId()) > 0) {
